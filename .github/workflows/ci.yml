@@ -1,0 +1,39 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: typecheck / lint / test / build
+    uses: rustly-tech/.github/.github/workflows/web-ci.yml@main
+
+  rust-fixtures:
+    name: real rustc WASI fixtures
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: dtolnay/rust-toolchain@6d653d7b95fcd86958c56f3f69e46c69e59a1c6f # stable
+        with:
+          toolchain: 1.98.0
+          targets: wasm32-wasip1
+      - name: Rebuild fixtures reproducibly
+        run: |
+          cp tests/fixtures/io.wasm /tmp/io.wasm
+          cp tests/fixtures/exit.wasm /tmp/exit.wasm
+          cp tests/fixtures/output.wasm /tmp/output.wasm
+          cp tests/fixtures/filesystem.wasm /tmp/filesystem.wasm
+          bash scripts/build-fixtures.sh
+          cmp /tmp/io.wasm tests/fixtures/io.wasm
+          cmp /tmp/exit.wasm tests/fixtures/exit.wasm
+          cmp /tmp/output.wasm tests/fixtures/output.wasm
+          cmp /tmp/filesystem.wasm tests/fixtures/filesystem.wasm
