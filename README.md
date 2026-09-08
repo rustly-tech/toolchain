@@ -1,42 +1,28 @@
-# rustly-tech/toolchain
+# Rustly toolchain
 
-Browser-side Rust execution primitives and versioned toolchain asset contracts
-for [Rustly](https://rustly.tech).
+Rust toolchain support for the Rustly website.
 
-This repository provides a small WASI preview 1 runtime that executes
-precompiled `wasm32-wasip1` Rust programs with stdin, stdout, stderr, arguments,
-and explicit resource limits. It also owns browser capability detection and the
-content-addressed bundle manifest consumed by the web application.
-
-## Status
-
-| Capability                                 | Status                                                 |
-| ------------------------------------------ | ------------------------------------------------------ |
-| Execute precompiled Rust/WASI              | **IMPLEMENTED** and tested against real `rustc` output |
-| Capability detection and degradation tiers | **IMPLEMENTED**                                        |
-| Versioned BLAKE3 asset manifest            | **IMPLEMENTED**                                        |
-| Cross-browser runtime qualification        | **EXPERIMENTAL**                                       |
-| Compile Rust in-browser                    | **PLANNED**                                            |
-| Browser rust-analyzer                      | **PLANNED**                                            |
-
-Rust compilation currently remains remote. See
-[the qualification contract](docs/QUALIFICATION.md) for the evidence required
-before that changes.
+This package runs precompiled `wasm32-wasip1` Rust examples in the browser,
+reports runtime capabilities, and verifies versioned toolchain manifests. It
+does not contain an in-browser Rust compiler.
 
 ## Develop
 
 ```sh
-pnpm install --frozen-lockfile
-pnpm run fixtures
-pnpm run typecheck
-pnpm run lint
-pnpm run format
-pnpm run test
-pnpm run build
+corepack enable
+pnpm install
+pnpm typecheck
+pnpm lint
+pnpm test
+pnpm build
 ```
 
-The checked-in WebAssembly fixtures are genuine Rust programs. CI rebuilds them
-with pinned Rust 1.98.0 and reruns the runtime suite against the fresh output.
+The test fixtures require a local Rust toolchain with the `wasm32-wasip1`
+target. Run `pnpm fixtures` to rebuild them.
+
+See [browser toolchain qualification](docs/QUALIFICATION.md) for supported
+behavior, limitations, and the work required before browser compilation can be
+claimed.
 
 ## License
 
