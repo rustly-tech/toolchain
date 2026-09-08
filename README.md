@@ -36,7 +36,7 @@ pnpm run build
 ```
 
 The checked-in WebAssembly fixtures are genuine Rust programs. CI rebuilds them
-with pinned Rust 1.98.0 and fails if the result changes.
+with pinned Rust 1.98.0 and reruns the runtime suite against the fresh output.
 
 ## License
 

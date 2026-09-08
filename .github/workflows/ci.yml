@@ -26,14 +26,12 @@ jobs:
         with:
           toolchain: 1.98.0
           targets: wasm32-wasip1
-      - name: Rebuild fixtures reproducibly
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - run: pnpm install --frozen-lockfile
+      - name: Rebuild with pinned rustc and execute the runtime suite
         run: |
-          cp tests/fixtures/io.wasm /tmp/io.wasm
-          cp tests/fixtures/exit.wasm /tmp/exit.wasm
-          cp tests/fixtures/output.wasm /tmp/output.wasm
-          cp tests/fixtures/filesystem.wasm /tmp/filesystem.wasm
           bash scripts/build-fixtures.sh
-          cmp /tmp/io.wasm tests/fixtures/io.wasm
-          cmp /tmp/exit.wasm tests/fixtures/exit.wasm
-          cmp /tmp/output.wasm tests/fixtures/output.wasm
-          cmp /tmp/filesystem.wasm tests/fixtures/filesystem.wasm
+          pnpm run test
